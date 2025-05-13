@@ -9,11 +9,13 @@
 
 using System.Collections.Generic;
 
+using StarAnimation.Core.Effect.Parameter;
+using StarAnimation.Models;
 using StarAnimation.Utils.Area;
 
 using SharedLib.MathUtils;
 
-namespace StarAnimation.Core.Effect
+namespace StarAnimation.Core.Effect.Instance
 {
     public class ConcentrateInstance : EffectInstance
     {
@@ -21,7 +23,7 @@ namespace StarAnimation.Core.Effect
         public ConcentrateInstance(Vector2F center, IAreaShape area, float duration, float effectAppliedChance)
             : base(center, area, duration, effectAppliedChance) { }
 
-        protected override void OnApplyTo(List<Star> stars)
+        protected override void OnApplyTo(IReadOnlyList<Star> stars)
         {
 
         }

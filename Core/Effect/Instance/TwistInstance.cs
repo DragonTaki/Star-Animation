@@ -11,12 +11,14 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
+using StarAnimation.Core.Effect.Parameter;
+using StarAnimation.Models;
 using StarAnimation.Utils.Area;
 
 using SharedLib.MathUtils;
 using SharedLib.RandomTable;
 
-namespace StarAnimation.Core.Effect
+namespace StarAnimation.Core.Effect.Instance
 {
     /// <summary>
     /// Represents a twist effect applied to stars.
@@ -86,7 +88,7 @@ namespace StarAnimation.Core.Effect
                 Distance = (float)Math.Sqrt(dx * dx + dy * dy)
             });
         }
-        protected override void OnApplyTo(List<Star> stars)
+        protected override void OnApplyTo(IReadOnlyList<Star> stars)
         {
             affectedStars.Clear();
             starInfos.Clear();

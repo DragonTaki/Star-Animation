@@ -13,7 +13,7 @@ using SharedLib.RandomTable;
 using SharedLib.MathUtils;
 using SharedLib.PhysicsUtils;
 
-namespace StarAnimation.Core
+namespace StarAnimation.Models
 {
     /// <summary>
     /// Represents a star in the starfield with structured properties for position, speed, direction, color, and animation phases.

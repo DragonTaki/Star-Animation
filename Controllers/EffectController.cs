@@ -13,8 +13,8 @@ using System.Drawing;
 
 using StarAnimation.Core;
 using StarAnimation.Core.Effect;
-using StarAnimation.Renderers;
-using StarAnimation.Utils;
+using StarAnimation.Core.Effect.Parameter;
+using StarAnimation.Models;
 using StarAnimation.Utils.Area;
 
 using SharedLib.RandomTable;
@@ -26,15 +26,18 @@ namespace StarAnimation.Controllers
     /// Controls dynamic starfield effects and visual debugging.
     /// Manages multiple concurrently active visual effects.
     /// </summary>
-    public class StarEffectController
+    public class EffectController
     {
-        private readonly int canvasWidth, canvasHeight;
-        private readonly FrameRenderer frameRenderer;
+        private readonly int width;
+        private readonly int height;
+        private readonly FrameController frameController;
+        private readonly StarController starController;
+
+        private readonly IRandomProvider Rand = GlobalRandom.Instance;
 
         private readonly List<IEffectInstance> activeEffects = new();
         private readonly Dictionary<EffectType, object> effectConfigs = new(EffectConfigRegistry.Configs);
         private readonly List<EffectEntry> effectEntries = new();
-        private readonly IRandomProvider Rand = GlobalRandom.Instance;
 
         private bool EnableDebugFrame { get; set; } = false;
 
@@ -60,13 +63,24 @@ namespace StarAnimation.Controllers
             public Color DebugColor;
         }
 
-        public StarEffectController(int width, int height)
+        public EffectController(int width, int height, StarController starController)
         {
-            canvasWidth = width;
-            canvasHeight = height;
-            frameRenderer = new FrameRenderer();
+            this.width = width;
+            this.height = height;
+            this.starController = starController;
 
-            // Register effect entries
+            frameController = new FrameController(width, height);
+            RegistEffect();
+        }
+
+        public void Resize(int width, int height)
+        {
+
+        }
+
+        // Register effect entries
+        public void RegistEffect()
+        {
             foreach (EffectType type in Enum.GetValues(typeof(EffectType)))
             {
                 if (!enableEffect.TryGetValue(type, out var enabled) || !enabled)
@@ -88,14 +102,21 @@ namespace StarAnimation.Controllers
                 });
             }
         }
+
         // For outside manual add effect
-        public void AddEffect(EffectInstance effect, List<Star> stars)
+        public void AddEffect(EffectInstance effect)
         {
+            var stars = starController.Stars;
             effect.ApplyTo(stars);
             activeEffects.Add(effect);
         }
-        private void AutoAddEffect(List<Star> stars)
+        private void AutoAddEffect()
         {
+            var stars = starController.Stars;
+            // If no star, no effect need to be generated
+            if (stars == null || stars.Count == 0)
+                return;
+
             // Attempt to trigger new effects
             foreach (var entry in effectEntries)
             {
@@ -115,20 +136,21 @@ namespace StarAnimation.Controllers
 
                 if (Rand.NextFloat() < triggerChance)
                 {
-                    var area = entry.AreaSelector.GetArea(canvasWidth, canvasHeight);
+                    var area = entry.AreaSelector.GetArea(width, height);
                     var instance = entry.CreateInstance(area, config);
 
                     instance.ApplyTo(stars);
                     activeEffects.Add(instance);
 
                     if (EnableDebugFrame)
-                        frameRenderer.ShowFrame(area, entry.DebugColor, 4);
+                        frameController.ShowFrame(area, entry.DebugColor, 4);
                 }
 
                 entry.Countdown = countdown;
             }
         }
-        public void Update(List<Star> stars, Graphics g)
+
+        public void Update()
         {
             // Update all active effects
             for (int i = activeEffects.Count - 1; i >= 0; i--)
@@ -140,16 +162,16 @@ namespace StarAnimation.Controllers
                     activeEffects.RemoveAt(i);
             }
 
-            AutoAddEffect(stars);
+            AutoAddEffect();
 
             if (EnableDebugFrame)
-                frameRenderer.Update();
+                frameController.Update();
         }
 
         public void Draw(Graphics g)
         {
             if (EnableDebugFrame)
-                frameRenderer.Draw(g);
+                frameController.Draw(g);
         }
     }
 }

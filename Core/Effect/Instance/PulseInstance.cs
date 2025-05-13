@@ -11,12 +11,13 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
+using StarAnimation.Core.Effect.Parameter;
+using StarAnimation.Models;
 using StarAnimation.Utils.Area;
 
 using SharedLib.MathUtils;
-using SharedLib.RandomTable;
 
-namespace StarAnimation.Core.Effect
+namespace StarAnimation.Core.Effect.Instance
 {
     /// <summary>
     /// Applies a time-based sinusoidal opacity (pulse) effect to each star individually.
@@ -59,7 +60,7 @@ namespace StarAnimation.Core.Effect
         /// <summary>
         /// Initializes the pulse phase for each star (only once per star).
         /// </summary>
-        protected override void OnApplyTo(List<Star> stars)
+        protected override void OnApplyTo(IReadOnlyList<Star> stars)
         {
             affectedStars.Clear();
 
@@ -70,7 +71,7 @@ namespace StarAnimation.Core.Effect
                     if (Rand.NextFloat() < EffectAppliedChance)
                     {
                         star.Pulse.HasPhase = true;
-                        star.Pulse.Delay = (float)(Rand.NextDouble() * 2.0);
+                        star.Pulse.Delay = Rand.NextFloat() * 2.0f;
                         star.Pulse.ShiningTimes = Rand.NextInt(1, 4);
                         affectedStars.Add(star);
                     }

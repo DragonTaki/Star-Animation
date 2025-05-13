@@ -9,10 +9,12 @@
 
 using StarAnimation.Utils.Area;
 
+using StarAnimation.Core.Effect.Instance;
+
 using SharedLib.MathUtils;
 using SharedLib.RandomTable;
 
-namespace StarAnimation.Core.Effect
+namespace StarAnimation.Core.Effect.Parameter
 {
     /// <summary>
     /// Declare configurable parameter for Twist effect instance.

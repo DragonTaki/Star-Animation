@@ -11,11 +11,13 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
+using StarAnimation.Core.Effect.Parameter;
+using StarAnimation.Models;
 using StarAnimation.Utils.Area;
 
 using SharedLib.MathUtils;
 
-namespace StarAnimation.Core.Effect
+namespace StarAnimation.Core.Effect.Instance
 {
     /// <summary>
     /// Applies a sinusoidal red-blue color shift effect to a list of stars.
@@ -51,7 +53,7 @@ namespace StarAnimation.Core.Effect
         /// <summary>
         /// Initializes color shift effect (applies to stars based on probability).
         /// </summary>
-        protected override void OnApplyTo(List<Star> stars)
+        protected override void OnApplyTo(IReadOnlyList<Star> stars)
         {
             float currentTime = Environment.TickCount;
 
@@ -72,7 +74,7 @@ namespace StarAnimation.Core.Effect
                     if (Rand.NextFloat() < EffectAppliedChance)
                     {
                         star.ColorShift.HasPhase = true;
-                        star.ColorShift.Delay = (float)(Rand.NextDouble() * 2.0);
+                        star.ColorShift.Delay = Rand.NextFloat() * 2.0f;
                         star.ColorShift.BiasDirection = Rand.NextFloat() < 0.5 ? -1f : 1f;
                         star.Color.Base = star.ColorShift.BiasDirection < 0
                             ? Color.FromArgb(255, 0, 0) // Red
@@ -113,9 +115,9 @@ namespace StarAnimation.Core.Effect
                 }
 
                 float timeSinceStart = elapsedTime - star.ColorShift.Delay;
-                if (timeSinceStart < 0f) continue;
+                if (timeSinceStart < 0.0f) continue;
 
-                float wave = (float)Math.Sin(2 * Math.PI * timeSinceStart / Duration);
+                float wave = (float)Math.Sin(2.0f * Math.PI * timeSinceStart / Duration);
                 Color targetColor = MathUtil.LerpColor(Color.White, star.Color.Base, wave);
                 star.Color.Current = targetColor;
             }
@@ -125,7 +127,7 @@ namespace StarAnimation.Core.Effect
             foreach (var star in affectedStars)
             {
                 star.ColorShift.HasPhase = false;
-                star.Opacity = 1f;
+                star.Opacity = 1.0f;
             }
 
             affectedStars.Clear();

@@ -1,5 +1,5 @@
 /* ----- ----- ----- ----- */
-// Drawable.cs
+// IDrawable.cs
 // Do not distribute or modify
 // Author: DragonTaki (https://github.com/DragonTaki)
 // Create Date: 2025/05/08
@@ -9,8 +9,8 @@
 
 namespace StarAnimation.Interfaces
 {
-    public class Drawable
+    public class IDrawable
     {
-        // ...
+        // No object need IDrawable for now
     }
 }

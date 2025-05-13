@@ -7,7 +7,7 @@
 // Version: v1.0
 /* ----- ----- ----- ----- */
 
-namespace StarAnimation.Core
+namespace StarAnimation.Models
 {
     public enum EffectType
     {

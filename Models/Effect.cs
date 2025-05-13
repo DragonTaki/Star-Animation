@@ -1,5 +1,5 @@
 /* ----- ----- ----- ----- */
-// Effects.cs
+// Effect.cs
 // Do not distribute or modify
 // Author: DragonTaki (https://github.com/DragonTaki)
 // Create Date: 2025/05/08
@@ -9,12 +9,12 @@
 
 using System.Drawing;
 
-namespace StarAnimation.Core
+namespace StarAnimation.Models
 {
     /// <summary>
     /// Represents a local visual effect applied to a specific area of the field.
     /// </summary>
-    public class Effects
+    public class Effect
     {
         public RectangleF Area { get; set; }
         public float TimeLeft { get; set; }
@@ -31,7 +31,7 @@ namespace StarAnimation.Core
         /// <param name="type">The type of effect ("twist", "pulse", or "colorShift").</param>
         /// <param name="strength">The strength of the effect (affects intensity).</param>
         /// <param name="color">Optional target color for the effect (only used for "colorShift").</param>
-        public Effects(RectangleF area, float duration, string type, float strength, Star star, Color? color = null)
+        public Effect(RectangleF area, float duration, string type, float strength, Star star, Color? color = null)
         {
             Area = area;
             TimeLeft = duration;

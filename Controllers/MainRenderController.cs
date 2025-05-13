@@ -9,9 +9,7 @@
 
 using System.Drawing;
 
-using StarAnimation.Renderers;
-
-using SharedLib.RandomTable;
+using SharedLib.Globals;
 using SharedLib.Timing;
 
 namespace StarAnimation.Controllers
@@ -22,19 +20,19 @@ namespace StarAnimation.Controllers
     public class MainRenderController
     {
         /// <summary>
-        /// Renderer responsible for drawing and updating star particles.
+        /// Optional background renderer (static or animated).
         /// </summary>
-        private readonly StarRenderer starRenderer;
+        private readonly BackgroundController backgroundController;
 
         /// <summary>
         /// Controller that applies visual effects and overlays on the starfield.
         /// </summary>
-        private readonly StarEffectController effectController;
+        private readonly EffectController effectController;
 
         /// <summary>
-        /// Optional background renderer (static or animated).
+        /// Renderer responsible for drawing and updating star particles.
         /// </summary>
-        private readonly BackgroundRenderer backgroundRenderer;
+        private readonly StarController starController;
 
         /// <summary>
         /// Star animation timer.
@@ -48,15 +46,19 @@ namespace StarAnimation.Controllers
         /// <param name="rand">Random number generator used for effects and randomness.</param>
         /// <param name="width">Width of the rendering canvas.</param>
         /// <param name="height">Height of the rendering canvas.</param>
-        public MainRenderController(int width, int height, ITimerProvider timerProvider)
+        public MainRenderController()
         {
-            // Initialize all renderers and controllers
-            starRenderer = new StarRenderer(width, height);
-            effectController = new StarEffectController(width, height);
-            backgroundRenderer = new BackgroundRenderer(width, height);
+            int width = GlobalWindow.Width;
+            int height = GlobalWindow.Height;
 
-            // Initialize timer
-            timer = timerProvider;
+            timer = GlobalTime.Timer;
+
+            // Initialize all renderers and controllers
+            backgroundController = new BackgroundController(width, height);
+            starController = new StarController(width, height);
+            effectController = new EffectController(width, height, starController);
+
+            // Register update event
             timer.OnAnimationFrame += Update;
         }
 
@@ -65,21 +67,22 @@ namespace StarAnimation.Controllers
         /// </summary>
         public void Update()
         {
-            starRenderer.Update();
-            effectController.Update(starRenderer.GetStars(), null); // Optional: pass Graphics if needed for region logic
+            backgroundController.Update();
+            effectController.Update();
+            starController.Update();
         }
 
         /// <summary>
         /// Renders all visual layers onto the provided Graphics context.
         /// </summary>
         /// <param name="g">The Graphics object to draw onto.</param>
-        public void Draw(Graphics g)
+        public void Render(Graphics g)
         {
             if (g == null) return;
 
-            backgroundRenderer.Draw(g);
-            starRenderer.Draw(g);
+            backgroundController.Draw(g);
             effectController.Draw(g);
+            starController.Draw(g);
         }
 
         /// <summary>
@@ -89,9 +92,9 @@ namespace StarAnimation.Controllers
         /// <param name="height">New screen height.</param>
         public void Resize(int width, int height)
         {
-            starRenderer.Resize(width, height);
-            backgroundRenderer.Resize(width, height);
-            // effectController usually doesn't depend on size unless region-based logic is added
+            backgroundController.Resize(width, height);
+            effectController.Resize(width, height);
+            starController.Resize(width, height);
         }
     }
 }
